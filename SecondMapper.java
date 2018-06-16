@@ -1,18 +1,19 @@
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.StringTokenizer;
 
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapreduce.Reducer;
+import org.apache.hadoop.mapreduce.Mapper;
 
-public static class SecondMapper extends Mapper<Object, Text, IntWritable, Text> {
+public class SecondMapper extends Mapper<Object, Text, IntWritable, Text> {
     
     private IntWritable id;
     private String pr;
     private int count;
     private float average_pr;
   
-    public void map(Object key, Text value, Context context) {
+    public void map(Object key, Text value, Context context) throws IOException, InterruptedException{
         StringTokenizer str = new StringTokenizer(value.toString());
         // if not empty get the page if
         if (str.hasMoreTokens()) {

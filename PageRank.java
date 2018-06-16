@@ -26,16 +26,18 @@ public class PageRank {
         Configuration conf = new Configuration();
 
         // 输入路径
-        String pathIn = "/in";
+        String pathIn = "/input";
 
+		String output = "/output";
+		
         // 输出路径
-        String pathOut1 = "/out1";
+        String pathOut = "/output";
 
         // 用来交换的
         String pathTmp = "";
 
         // the ip of master
-        FileSystem.setDefaultUri(conf, new URI("hdfs://192.168.130.63:9000")); 
+        FileSystem.setDefaultUri(conf, new URI("hdfs://192.168.142.129:9000"));
 
         // pretreat the data
         Job job = new Job(conf, "MapReduce pretreatment");
@@ -52,20 +54,20 @@ public class PageRank {
         FileOutputFormat.setOutputPath(job, new Path(pathOut));
 
         // swap the input file and output file
-        pathTmp = pathIn;
         pathIn = pathOut;
-        pathOut = pathTmp;
+		pathOut = output + 0;
 
         job.waitForCompletion(true);
+		FileSystem.get(job.getConfiguration()).delete(new Path(pathOut), true);
 
         // 进行 pagerank
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 100; i++) {
             job = new Job(conf, "MapReduce pagerank");
             job.setJarByClass(PageRank.class);
             
             // firstmapper used to 
-            job.setMapperClass(FirstMapper.class);
-            job.setReducerClass(FirstReducer.class);
+            job.setMapperClass(SecondMapper.class);
+            job.setReducerClass(SecondReducer.class);
             
             // Only if the output type of map and reduce class is same, we can do so
             job.setOutputKeyClass(IntWritable.class);
@@ -75,9 +77,8 @@ public class PageRank {
             FileOutputFormat.setOutputPath(job, new Path(pathOut));
     
             // swap the input file and output file
-            pathTmp = pathIn;
             pathIn = pathOut;
-            pathOut = pathTmp;
+            pathOut = output + (i + 1);
             
             job.waitForCompletion(true);
         }

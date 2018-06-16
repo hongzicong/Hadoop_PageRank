@@ -7,7 +7,6 @@ import org.apache.hadoop.mapreduce.Mapper;
 
 public class FirstMapper extends Mapper<Object, Text, IntWritable, Text> {
 
-    @Override
     public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
 
         IntWritable id;
@@ -24,7 +23,7 @@ public class FirstMapper extends Mapper<Object, Text, IntWritable, Text> {
         }
 
         // 该页面所指向的页面
-        nextId = new IntWriteable(Integer.parseInt(str.nextToken()));
+        nextId = new IntWritable(Integer.parseInt(str.nextToken()));
 
         context.write(id, new Text("&" + nextId));
 

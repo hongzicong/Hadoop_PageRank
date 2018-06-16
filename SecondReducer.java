@@ -1,14 +1,15 @@
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.StringTokenizer;
 
 import org.apache.hadoop.io.FloatWritable;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
-public static class SecondReducer extends Reducer<IntWritable, Text, IntWritable, Text> {
+public class SecondReducer extends Reducer<IntWritable, Text, IntWritable, Text> {
     
-    public void reduce(IntWritable key, Iterable<Text> values, Context context) {
+    public void reduce(IntWritable key, Iterable<Text> values, Context context) throws IOException, InterruptedException{
         
         // 定义一个存储网页链接ID的队列
         ArrayList<String> idList = new ArrayList<String>();
@@ -33,13 +34,14 @@ public static class SecondReducer extends Reducer<IntWritable, Text, IntWritable
         }
 
         // 解决终止点问题和陷阱问题
-        pr = pr * 0.85f + 0.15f;
+        pr = pr * 0.8f + 0.2f;
 
         // 得到所有链接ID的String形式
         for (int i = 0; i < idList.size(); i++) {
             output = output + idList.get(i) + "  ";
         }
         String result = pr + output;
+		System.out.println(key + " " + pr);
         context.write(key, new Text(result));
     }
 }
